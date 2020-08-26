@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon32_32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon16_16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="二分查找对于有序数组的查找，我们首先要想到的是使用二分查找。 1. 复杂度二分查找使用了“减而治之”的策略，以当前区间内居中的元素作为要查找的目标元素的试探对象，无论沿着哪个方向深入，新问题的规模都将缩小一半。 由于搜索区间的宽度以 $1&#x2F;2$ 的比率速度递减，经过 $log_{2}(high-low)$ 步迭代后，算法必然终止。故时间复杂度为 $O(logn)$。 2. 基本框架以下将以左闭右开">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二分查找">
+<meta property="og:url" content="http://yoursite.com/2020/08/26/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/index.html">
+<meta property="og:site_name" content="Karsyn&#39;s Blog">
+<meta property="og:description" content="二分查找对于有序数组的查找，我们首先要想到的是使用二分查找。 1. 复杂度二分查找使用了“减而治之”的策略，以当前区间内居中的元素作为要查找的目标元素的试探对象，无论沿着哪个方向深入，新问题的规模都将缩小一半。 由于搜索区间的宽度以 $1&#x2F;2$ 的比率速度递减，经过 $log_{2}(high-low)$ 步迭代后，算法必然终止。故时间复杂度为 $O(logn)$。 2. 基本框架以下将以左闭右开">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-08-26T14:17:41.889Z">
+<meta property="article:modified_time" content="2020-08-26T14:19:28.556Z">
+<meta property="article:author" content="Hokyoouz">
+<meta property="article:tag" content="算法">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/08/26/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>二分查找 | Karsyn's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Karsyn's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/26/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Hokyoouz">
+      <meta itemprop="description" content="记录一路以来成长的过程">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Karsyn's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          二分查找
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-08-26 22:17:41 / 修改时间：22:19:28" itemprop="dateCreated datePublished" datetime="2020-08-26T22:17:41+08:00">2020-08-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="二分查找"><a href="#二分查找" class="headerlink" title="二分查找"></a>二分查找</h2><p>对于<strong>有序数组</strong>的查找，我们首先要想到的是使用<strong>二分查找</strong>。</p>
+<h3 id="1-复杂度"><a href="#1-复杂度" class="headerlink" title="1. 复杂度"></a>1. 复杂度</h3><p>二分查找使用了<strong>“减而治之”</strong>的策略，以当前区间内居中的元素作为要查找的目标元素的试探对象，无论沿着哪个方向深入，新问题的规模都将<strong>缩小一半</strong>。</p>
+<p>由于<strong>搜索区间</strong>的宽度以 $1/2$ 的比率速度递减，经过 $log_{2}(high-low)$ 步迭代后，算法必然终止。故时间复杂度为 $O(logn)$。</p>
+<h3 id="2-基本框架"><a href="#2-基本框架" class="headerlink" title="2. 基本框架"></a>2. 基本框架</h3><p>以下将以<strong>左闭右开</strong>的区间方式进行讲述。</p>
+<p>假设我们要在<strong>搜索区间</strong><code>arr[low, high)</code> 中查找目标元素 <code>target</code></p>
+<p>根据二分查找的策略，每次查找以中间元素 <code>arr[mid]</code> 为界，把区间分为三部分：</p>
+<ul>
+<li><code>arr[low, mid)</code></li>
+<li><code>arr[mid]</code></li>
+<li><code>arr(mid, high)</code></li>
+</ul>
+<p>根据<code>arr[mid]</code>和<code>target</code>的比较结果，若相等，则表明成功找到目标元素，返回其下标。</p>
+<p>若不相等，再根据比较结果来决定<strong>搜索区间</strong>向哪个方向<strong>缩小一半</strong>（<strong>减而治之</strong>的策略）</p>
+<p>代码实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> Rank <span class="keyword">int</span>;	<span class="comment">// low, mid, high 都是 Rank 类型，用来强调它们是下标</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">Rank <span class="title">binary_search</span><span class="params">(T *arr, <span class="keyword">const</span> T &amp;target, Rank low, Rank high)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// 若搜索整个数组，则初始的low = 0, high = 数组的长度</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 当搜索区间有效时，循环不断进行。每次循环都把搜索区间减小一半。（减而治之）</span></span><br><span class="line">    <span class="comment">// 由于是采用的是左闭右开区间，故退出循环的条件是 low == high。（因为[low, high)此时为空区间）</span></span><br><span class="line">    <span class="keyword">while</span> (low &lt; high) &#123;</span><br><span class="line">        Rank mid = low + (high - low) &gt;&gt; <span class="number">1</span>;	<span class="comment">// 防溢出，等价于 (low + high) &gt;&gt; 1</span></span><br><span class="line">        <span class="keyword">if</span> (target &lt; arr[mid]) &#123;</span><br><span class="line">            <span class="comment">// 若目标元素小于中间的元素，说明目标元素在前半段，即[low, mid)</span></span><br><span class="line">            <span class="comment">// 根据减而治之策略，把问题规模，即搜索区间减小为[low, mid)</span></span><br><span class="line">            high = mid;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[mid] &lt; target) &#123;</span><br><span class="line">            <span class="comment">// 若目标元素大于中间的元素，说明目标元素在后半段,即[mid+1, high]</span></span><br><span class="line">            <span class="comment">// 根据减而治之策略，把问题规模，即搜索区间减小为[mid+1, high)</span></span><br><span class="line">            low = mid + <span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// arr[mid] == target</span></span><br><span class="line">            <span class="comment">// 找到目标元素了，返回其下标</span></span><br><span class="line">            <span class="keyword">return</span> mid;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 搜索区间为空区间了，退出循环</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;	<span class="comment">// 查找失败</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上的算法实现有什么缺陷呢？</p>
+<ol>
+<li>查找失败指示简单地返回-1，不能指示失败的位置。</li>
+<li>若同时有多个目标元素，只能获得特定的元素索引。如<code>arr[] = {1, 2, 2, 2, 3}</code>，则根据以上代码实现，算法返回的是索引2。倘若我想得到目标元素的左边界索引1，或者想得到目标元素的右边界索引3呢？那就要对以上代码进行改进了。</li>
+</ol>
+<h3 id="3-查找目标元素的左边界索引"><a href="#3-查找目标元素的左边界索引" class="headerlink" title="3. 查找目标元素的左边界索引"></a>3. 查找目标元素的左边界索引</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> Rank;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">Rank <span class="title">left_bound</span><span class="params">(T *arr, <span class="keyword">const</span> T&amp; target, Rank low, Rank high)</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 可以把整个数组分为3个部分</span></span><br><span class="line">    <span class="comment">// [0, low)</span></span><br><span class="line">    <span class="comment">// [low, high)：搜索区间</span></span><br><span class="line">    <span class="comment">// [high, n)：n为数组长度</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> (low &lt; high) &#123;</span><br><span class="line">        Rank mid = low + (high - low) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (target &lt; arr[mid]) &#123;</span><br><span class="line">            high = mid;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[mid] &lt; target) &#123;</span><br><span class="line">            low = mid + <span class="number">1</span>;	<span class="comment">// 区间arr[0, low)向右扩展。</span></span><br><span class="line">            <span class="comment">// 由于arr[mid] &lt; target， 且arr[0, low) ≤(不大于) arr[mid]</span></span><br><span class="line">            <span class="comment">// 故 arr[0, low) &lt; target 必然永远成立</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;	<span class="comment">// ***********这里为改变的地方***********</span></span><br><span class="line">            <span class="comment">// arr[mid] == target</span></span><br><span class="line">            <span class="comment">// 这里先不返回查找到的索引。由于要查找左边界，故继续在前半段进行查找。</span></span><br><span class="line">            <span class="comment">// 即搜索区间缩小为[low, high)</span></span><br><span class="line">            high = mid;</span><br><span class="line">            <span class="comment">// 区间arr[high, n)向左扩展</span></span><br><span class="line">            <span class="comment">// 由于arr[mid] ≥ target，且arr[high, n) ≥ arr[mid]</span></span><br><span class="line">            <span class="comment">// 故arr[high, n) ≥ target 必然永远成立</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 搜索区间为空区间时，循环退出。</span></span><br><span class="line">    <span class="comment">// 此时整个数组只剩下2部分</span></span><br><span class="line">    <span class="comment">// [0, low)	根据不变性：arr[0, low) &lt; target 永远成立</span></span><br><span class="line">    <span class="comment">// [high, n) 根据不变性: arr[high, n) &gt;= target 永远成立</span></span><br><span class="line">    <span class="comment">// 且 low == high</span></span><br><span class="line">    <span class="comment">// 故arr[low-1]必定为小于target的第一个元素</span></span><br><span class="line">    <span class="comment">//   arr[low]必定为不小于target的第一个元素</span></span><br><span class="line">    <span class="keyword">return</span> low;	<span class="comment">// 返回high也一样。由于我们想要得到左边界target，即要得到不小于target的第一个索引。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>加上查找失败的情况，并且合并if的代码实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> Rank;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">Rank <span class="title">left_bound</span><span class="params">(T *arr, <span class="keyword">const</span> T&amp; target, Rank low, Rank high)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (low &lt; high) &#123;</span><br><span class="line">        <span class="keyword">int</span> low = low + (high - low) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (target &lt;= arr[mid]) &#123;</span><br><span class="line">            high = mid;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// arr[mid] &lt; target</span></span><br><span class="line">            low = mid + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 查找失败的情况。并通过短路求值防止越界。</span></span><br><span class="line">    <span class="keyword">if</span> (low &gt;= arr.<span class="built_in">size</span>() || arr[low] != target) &#123;</span><br><span class="line">       	<span class="comment">// low 必然不会小于0，故只需判断low大于arr.size()的情况</span></span><br><span class="line">     	<span class="keyword">return</span> <span class="number">-1</span>;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> low;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-查找目标元素的右边界索引"><a href="#4-查找目标元素的右边界索引" class="headerlink" title="4. 查找目标元素的右边界索引"></a>4. 查找目标元素的右边界索引</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> Rank;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">Rank <span class="title">right_bound</span><span class="params">(T *arr, <span class="keyword">const</span> T&amp; target, Rank low, Rank high)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (low &lt; high) &#123;</span><br><span class="line">        Rank mid = low + (high - low) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (target &lt; arr[mid]) &#123;</span><br><span class="line">            high = mid;	<span class="comment">// 区间 [high, n)向左扩展</span></span><br><span class="line">            <span class="comment">// 由于 arr[mid] &gt; target, arr[high, n) ≥ arr[mid]</span></span><br><span class="line">            <span class="comment">// 故 arr[high, n) 必然大于 target</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[mid] &lt; target) &#123;</span><br><span class="line">            low = mid + <span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;	<span class="comment">// ***********这里为改变的地方***********</span></span><br><span class="line">            <span class="comment">// arr[mid] == target</span></span><br><span class="line">            <span class="comment">// 这里先不返回查找到的索引。由于要查找右边界，故继续在后半段进行查找。</span></span><br><span class="line">            <span class="comment">// 即搜索区间缩小为[mid, high)</span></span><br><span class="line">            low = mid + <span class="number">1</span>;</span><br><span class="line">            <span class="comment">// 区间 [0, low) 向右扩展</span></span><br><span class="line">            <span class="comment">// 由于 arr[mid] &lt;= target, arr[0, low) &lt;= arr[mid]</span></span><br><span class="line">            <span class="comment">// 故 arr[0, low) 必然小于等于 target</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 根据算法的不变性：</span></span><br><span class="line">    <span class="comment">// [0, low) 小于等于 target</span></span><br><span class="line">    <span class="comment">// [high, n) 大于 target</span></span><br><span class="line">    <span class="comment">// 由于要返回目标元素的右边界索引</span></span><br><span class="line">    <span class="keyword">return</span> low - <span class="number">1</span>;	<span class="comment">// 返回 high - 1 也一样</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>加上查找失败的情况，并且合并if的代码实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> Rank;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">Rank <span class="title">right_bound</span><span class="params">(T *arr, <span class="keyword">const</span> T&amp; target, Rank low, Rank high)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (low &lt; high) &#123;</span><br><span class="line">        Rank mid = low + (high - low) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (target &lt; arr[mid]) &#123;</span><br><span class="line">            high = mid;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// target &gt;= arr[mid]</span></span><br><span class="line">            low = high + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 查找失败的情况，并通过短路求值防止越界</span></span><br><span class="line">    <span class="keyword">if</span> (low &lt;= <span class="number">0</span> || arr[low - <span class="number">1</span>] != target) &#123;</span><br><span class="line">        <span class="comment">// low - 1 == high - 1 必然不会大于arr.size()，故只需判断小于0的情况</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> low - <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. 总结</h3><ul>
+<li><p>二分查找采用了对于搜索区间进行<strong>减而治之</strong>的策略。</p>
+</li>
+<li><p>如果查找目标元素边界索引，可通过把整个数组分为<strong>三个部分</strong></p>
+<ul>
+<li>[0, low)</li>
+<li>[low, high)：搜索区间</li>
+<li>[high, n)</li>
+</ul>
+<p>搜索区间最终都会变为空区间。</p>
+<p>根据[0, low)和[high,n)与目标元素的大小关系进行判断，从而返回正确的值。</p>
+</li>
+<li><p>如果查找左边界索引，<code>arr[mid] = target</code>时<strong>不返回</strong>，而是把搜索区间转向<strong>前半段</strong></p>
+</li>
+<li><p>如果查找右边界索引，<code>arr[mid] = target</code>时<strong>不返回</strong>，而是把搜索区间转向<strong>后半段</strong></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/10/%E5%85%B3%E4%BA%8EJavaScript%E7%9A%84%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" rel="prev" title="关于JavaScript的异步编程">
+      <i class="fa fa-chevron-left"></i> 关于JavaScript的异步编程
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#二分查找"><span class="nav-text">二分查找</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-复杂度"><span class="nav-text">1. 复杂度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-基本框架"><span class="nav-text">2. 基本框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-查找目标元素的左边界索引"><span class="nav-text">3. 查找目标元素的左边界索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-查找目标元素的右边界索引"><span class="nav-text">4. 查找目标元素的右边界索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-总结"><span class="nav-text">5. 总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Hokyoouz"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Hokyoouz</p>
+  <div class="site-description" itemprop="description">记录一路以来成长的过程</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hokyoouz</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

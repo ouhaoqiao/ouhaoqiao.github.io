@@ -157,6 +157,125 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/26/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Hokyoouz">
+      <meta itemprop="description" content="记录一路以来成长的过程">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Karsyn's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/08/26/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" class="post-title-link" itemprop="url">二分查找</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-08-26 22:17:41 / 修改时间：22:19:28" itemprop="dateCreated datePublished" datetime="2020-08-26T22:17:41+08:00">2020-08-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="二分查找"><a href="#二分查找" class="headerlink" title="二分查找"></a>二分查找</h2><p>对于<strong>有序数组</strong>的查找，我们首先要想到的是使用<strong>二分查找</strong>。</p>
+<h3 id="1-复杂度"><a href="#1-复杂度" class="headerlink" title="1. 复杂度"></a>1. 复杂度</h3><p>二分查找使用了<strong>“减而治之”</strong>的策略，以当前区间内居中的元素作为要查找的目标元素的试探对象，无论沿着哪个方向深入，新问题的规模都将<strong>缩小一半</strong>。</p>
+<p>由于<strong>搜索区间</strong>的宽度以 $1/2$ 的比率速度递减，经过 $log_{2}(high-low)$ 步迭代后，算法必然终止。故时间复杂度为 $O(logn)$。</p>
+<h3 id="2-基本框架"><a href="#2-基本框架" class="headerlink" title="2. 基本框架"></a>2. 基本框架</h3><p>以下将以<strong>左闭右开</strong>的区间方式进行讲述。</p>
+<p>假设我们要在<strong>搜索区间</strong><code>arr[low, high)</code> 中查找目标元素 <code>target</code></p>
+<p>根据二分查找的策略，每次查找以中间元素 <code>arr[mid]</code> 为界，把区间分为三部分：</p>
+<ul>
+<li><code>arr[low, mid)</code></li>
+<li><code>arr[mid]</code></li>
+<li><code>arr(mid, high)</code></li>
+</ul>
+<p>根据<code>arr[mid]</code>和<code>target</code>的比较结果，若相等，则表明成功找到目标元素，返回其下标。</p>
+<p>若不相等，再根据比较结果来决定<strong>搜索区间</strong>向哪个方向<strong>缩小一半</strong>（<strong>减而治之</strong>的策略）</p>
+<p>代码实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> Rank <span class="keyword">int</span>;	<span class="comment">// low, mid, high 都是 Rank 类型，用来强调它们是下标</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">Rank <span class="title">binary_search</span><span class="params">(T *arr, <span class="keyword">const</span> T &amp;target, Rank low, Rank high)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// 若搜索整个数组，则初始的low = 0, high = 数组的长度</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 当搜索区间有效时，循环不断进行。每次循环都把搜索区间减小一半。（减而治之）</span></span><br><span class="line">    <span class="comment">// 由于是采用的是左闭右开区间，故退出循环的条件是 low == high。（因为[low, high)此时为空区间）</span></span><br><span class="line">    <span class="keyword">while</span> (low &lt; high) &#123;</span><br><span class="line">        Rank mid = low + (high - low) &gt;&gt; <span class="number">1</span>;	<span class="comment">// 防溢出，等价于 (low + high) &gt;&gt; 1</span></span><br><span class="line">        <span class="keyword">if</span> (target &lt; arr[mid]) &#123;</span><br><span class="line">            <span class="comment">// 若目标元素小于中间的元素，说明目标元素在前半段，即[low, mid)</span></span><br><span class="line">            <span class="comment">// 根据减而治之策略，把问题规模，即搜索区间减小为[low, mid)</span></span><br><span class="line">            high = mid;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[mid] &lt; target) &#123;</span><br><span class="line">            <span class="comment">// 若目标元素大于中间的元素，说明目标元素在后半段,即[mid+1, high]</span></span><br><span class="line">            <span class="comment">// 根据减而治之策略，把问题规模，即搜索区间减小为[mid+1, high)</span></span><br><span class="line">            low = mid + <span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// arr[mid] == target</span></span><br><span class="line">            <span class="comment">// 找到目标元素了，返回其下标</span></span><br><span class="line">            <span class="keyword">return</span> mid;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 搜索区间为空区间了，退出循环</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;	<span class="comment">// 查找失败</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上的算法实现有什么缺陷呢？</p>
+<ol>
+<li>查找失败指示简单地返回-1，不能指示失败的位置。</li>
+<li>若同时有多个目标元素，只能获得特定的元素索引。如<code>arr[] = {1, 2, 2, 2, 3}</code>，则根据以上代码实现，算法返回的是索引2。倘若我想得到目标元素的左边界索引1，或者想得到目标元素的右边界索引3呢？那就要对以上代码进行改进了。</li>
+</ol>
+<h3 id="3-查找目标元素的左边界索引"><a href="#3-查找目标元素的左边界索引" class="headerlink" title="3. 查找目标元素的左边界索引"></a>3. 查找目标元素的左边界索引</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> Rank;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">Rank <span class="title">left_bound</span><span class="params">(T *arr, <span class="keyword">const</span> T&amp; target, Rank low, Rank high)</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 可以把整个数组分为3个部分</span></span><br><span class="line">    <span class="comment">// [0, low)</span></span><br><span class="line">    <span class="comment">// [low, high)：搜索区间</span></span><br><span class="line">    <span class="comment">// [high, n)：n为数组长度</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> (low &lt; high) &#123;</span><br><span class="line">        Rank mid = low + (high - low) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (target &lt; arr[mid]) &#123;</span><br><span class="line">            high = mid;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[mid] &lt; target) &#123;</span><br><span class="line">            low = mid + <span class="number">1</span>;	<span class="comment">// 区间arr[0, low)向右扩展。</span></span><br><span class="line">            <span class="comment">// 由于arr[mid] &lt; target， 且arr[0, low) ≤(不大于) arr[mid]</span></span><br><span class="line">            <span class="comment">// 故 arr[0, low) &lt; target 必然永远成立</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;	<span class="comment">// ***********这里为改变的地方***********</span></span><br><span class="line">            <span class="comment">// arr[mid] == target</span></span><br><span class="line">            <span class="comment">// 这里先不返回查找到的索引。由于要查找左边界，故继续在前半段进行查找。</span></span><br><span class="line">            <span class="comment">// 即搜索区间缩小为[low, high)</span></span><br><span class="line">            high = mid;</span><br><span class="line">            <span class="comment">// 区间arr[high, n)向左扩展</span></span><br><span class="line">            <span class="comment">// 由于arr[mid] ≥ target，且arr[high, n) ≥ arr[mid]</span></span><br><span class="line">            <span class="comment">// 故arr[high, n) ≥ target 必然永远成立</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 搜索区间为空区间时，循环退出。</span></span><br><span class="line">    <span class="comment">// 此时整个数组只剩下2部分</span></span><br><span class="line">    <span class="comment">// [0, low)	根据不变性：arr[0, low) &lt; target 永远成立</span></span><br><span class="line">    <span class="comment">// [high, n) 根据不变性: arr[high, n) &gt;= target 永远成立</span></span><br><span class="line">    <span class="comment">// 且 low == high</span></span><br><span class="line">    <span class="comment">// 故arr[low-1]必定为小于target的第一个元素</span></span><br><span class="line">    <span class="comment">//   arr[low]必定为不小于target的第一个元素</span></span><br><span class="line">    <span class="keyword">return</span> low;	<span class="comment">// 返回high也一样。由于我们想要得到左边界target，即要得到不小于target的第一个索引。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>加上查找失败的情况，并且合并if的代码实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> Rank;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">Rank <span class="title">left_bound</span><span class="params">(T *arr, <span class="keyword">const</span> T&amp; target, Rank low, Rank high)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (low &lt; high) &#123;</span><br><span class="line">        <span class="keyword">int</span> low = low + (high - low) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (target &lt;= arr[mid]) &#123;</span><br><span class="line">            high = mid;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// arr[mid] &lt; target</span></span><br><span class="line">            low = mid + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 查找失败的情况。并通过短路求值防止越界。</span></span><br><span class="line">    <span class="keyword">if</span> (low &gt;= arr.<span class="built_in">size</span>() || arr[low] != target) &#123;</span><br><span class="line">       	<span class="comment">// low 必然不会小于0，故只需判断low大于arr.size()的情况</span></span><br><span class="line">     	<span class="keyword">return</span> <span class="number">-1</span>;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> low;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-查找目标元素的右边界索引"><a href="#4-查找目标元素的右边界索引" class="headerlink" title="4. 查找目标元素的右边界索引"></a>4. 查找目标元素的右边界索引</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> Rank;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">Rank <span class="title">right_bound</span><span class="params">(T *arr, <span class="keyword">const</span> T&amp; target, Rank low, Rank high)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (low &lt; high) &#123;</span><br><span class="line">        Rank mid = low + (high - low) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (target &lt; arr[mid]) &#123;</span><br><span class="line">            high = mid;	<span class="comment">// 区间 [high, n)向左扩展</span></span><br><span class="line">            <span class="comment">// 由于 arr[mid] &gt; target, arr[high, n) ≥ arr[mid]</span></span><br><span class="line">            <span class="comment">// 故 arr[high, n) 必然大于 target</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[mid] &lt; target) &#123;</span><br><span class="line">            low = mid + <span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;	<span class="comment">// ***********这里为改变的地方***********</span></span><br><span class="line">            <span class="comment">// arr[mid] == target</span></span><br><span class="line">            <span class="comment">// 这里先不返回查找到的索引。由于要查找右边界，故继续在后半段进行查找。</span></span><br><span class="line">            <span class="comment">// 即搜索区间缩小为[mid, high)</span></span><br><span class="line">            low = mid + <span class="number">1</span>;</span><br><span class="line">            <span class="comment">// 区间 [0, low) 向右扩展</span></span><br><span class="line">            <span class="comment">// 由于 arr[mid] &lt;= target, arr[0, low) &lt;= arr[mid]</span></span><br><span class="line">            <span class="comment">// 故 arr[0, low) 必然小于等于 target</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 根据算法的不变性：</span></span><br><span class="line">    <span class="comment">// [0, low) 小于等于 target</span></span><br><span class="line">    <span class="comment">// [high, n) 大于 target</span></span><br><span class="line">    <span class="comment">// 由于要返回目标元素的右边界索引</span></span><br><span class="line">    <span class="keyword">return</span> low - <span class="number">1</span>;	<span class="comment">// 返回 high - 1 也一样</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>加上查找失败的情况，并且合并if的代码实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> Rank;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">Rank <span class="title">right_bound</span><span class="params">(T *arr, <span class="keyword">const</span> T&amp; target, Rank low, Rank high)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (low &lt; high) &#123;</span><br><span class="line">        Rank mid = low + (high - low) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (target &lt; arr[mid]) &#123;</span><br><span class="line">            high = mid;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// target &gt;= arr[mid]</span></span><br><span class="line">            low = high + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 查找失败的情况，并通过短路求值防止越界</span></span><br><span class="line">    <span class="keyword">if</span> (low &lt;= <span class="number">0</span> || arr[low - <span class="number">1</span>] != target) &#123;</span><br><span class="line">        <span class="comment">// low - 1 == high - 1 必然不会大于arr.size()，故只需判断小于0的情况</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> low - <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. 总结</h3><ul>
+<li><p>二分查找采用了对于搜索区间进行<strong>减而治之</strong>的策略。</p>
+</li>
+<li><p>如果查找目标元素边界索引，可通过把整个数组分为<strong>三个部分</strong></p>
+<ul>
+<li>[0, low)</li>
+<li>[low, high)：搜索区间</li>
+<li>[high, n)</li>
+</ul>
+<p>搜索区间最终都会变为空区间。</p>
+<p>根据[0, low)和[high,n)与目标元素的大小关系进行判断，从而返回正确的值。</p>
+</li>
+<li><p>如果查找左边界索引，<code>arr[mid] = target</code>时<strong>不返回</strong>，而是把搜索区间转向<strong>前半段</strong></p>
+</li>
+<li><p>如果查找右边界索引，<code>arr[mid] = target</code>时<strong>不返回</strong>，而是把搜索区间转向<strong>后半段</strong></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/10/%E5%85%B3%E4%BA%8EJavaScript%E7%9A%84%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -580,20 +699,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
