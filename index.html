@@ -307,7 +307,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-17 13:47:31" itemprop="dateModified" datetime="2020-09-17T13:47:31+08:00">2020-09-17</time>
+                <time title="修改时间：2020-09-17 13:56:49" itemprop="dateModified" datetime="2020-09-17T13:56:49+08:00">2020-09-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -408,17 +408,13 @@
 <h2 id="四、async和await"><a href="#四、async和await" class="headerlink" title="四、async和await"></a>四、async和await</h2><p>如果说<code>promise</code>是让我们用来<strong>对异步操作进行封装</strong></p>
 <p>那么<code>async</code>和<code>await</code>就是让我们<strong>用同步的代码格式来写异步操作</strong></p>
 <h3 id="1-基本用法"><a href="#1-基本用法" class="headerlink" title="1. 基本用法"></a>1. 基本用法</h3><ul>
-<li><p><code>aysnc</code>函数的返回值是个 Promise 对象。</p>
-</li>
-<li><p><code>await</code>后面跟的是一个 Promise 对象，返回该 Promise 对象的结果（相当于拿到 resolve 函数传出去的值）</p>
-</li>
-<li><p><code>await</code>只能出现在<code>async</code>函数中。在函数执行时，一旦遇到<code>await</code>函数会先返回，等到异步操作完成后，再接着执行函数体后面的语句。</p>
-</li>
-<li><p>若有多个<code>await</code>，程序的执行顺序就和代码的编写顺序一样（汲取了同步的优势，代码简洁）</p>
-</li>
-<li><p>若<code>await</code>后面的 Promise 对象变为 <code>rejected</code>状态，则整个<code>async</code>函数会中断执行。若不想中断执行，且想获得错误信息，可以通过<code>try catch</code>来捕获异常。</p>
-</li>
+<li><code>aysnc</code>函数的返回值是个 Promise 对象。</li>
+<li><code>await</code>后面跟的是一个 Promise 对象，返回该 Promise 对象的结果（相当于拿到 resolve 函数传出去的值）</li>
+<li><code>await</code>只能出现在<code>async</code>函数中。在函数执行时，一旦遇到<code>await</code>函数会先返回，等到异步操作完成后，再接着执行函数体后面的语句。</li>
+<li>若有多个<code>await</code>，程序的执行顺序就和代码的编写顺序一样（汲取了同步的优势，代码简洁）</li>
+<li>若<code>await</code>后面的 Promise 对象变为 <code>rejected</code>状态，则整个<code>async</code>函数会中断执行。若不想中断执行，且想获得错误信息，可以通过<code>try catch</code>来捕获异常。</li>
 </ul>
+<p>(关于<code>async</code>和<code>await</code>更详细的说明可看这篇博客：<a href="https://segmentfault.com/a/1190000017224799" target="_blank" rel="noopener">https://segmentfault.com/a/1190000017224799</a>)</p>
 <h3 id="2-解决回调地狱的最终版本"><a href="#2-解决回调地狱的最终版本" class="headerlink" title="2. 解决回调地狱的最终版本"></a>2. 解决回调地狱的最终版本</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> a_data = <span class="keyword">await</span> readFile(<span class="string">'./a.txt'</span>)</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'a文件的内容为:'</span>, a_data.toString())</span><br><span class="line">        <span class="keyword">let</span> b_data = <span class="keyword">await</span> readFile(<span class="string">'./b.txt'</span>)</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'b文件的内容为:'</span>, b_data.toString())</span><br><span class="line">        <span class="keyword">let</span> c_data = <span class="keyword">await</span> readFile(<span class="string">'./c.txt'</span>)</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'c文件的内容为:'</span>, c_data.toString())</span><br><span class="line">    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'读取文件失败:'</span>, e)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func()</span><br></pre></td></tr></table></figure>
 
 <p>如上所示，这种写法能保证读取文件的顺序是 a.txt → b.txt → c.txt，在异步操作的前提下保证了代码的简洁。</p>
